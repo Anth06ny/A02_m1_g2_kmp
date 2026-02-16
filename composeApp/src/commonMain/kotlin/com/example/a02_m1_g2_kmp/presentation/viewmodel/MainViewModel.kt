@@ -41,7 +41,7 @@ class MainViewModel : ViewModel() {
     val errorMessage = _errorMessage.asStateFlow()
 
     init {
-        //loadFakeData()
+        loadFakeData()
     }
 
     fun loadPhotographers() {

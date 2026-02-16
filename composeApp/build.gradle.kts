@@ -57,6 +57,10 @@ kotlin {
             implementation("io.ktor:ktor-serialization-kotlinx-json:3.2.2")
             //Pour le logger
             implementation("io.ktor:ktor-client-logging:3.2.2")
+
+            //Coil ImageLoader
+            implementation("io.coil-kt.coil3:coil-network-ktor3:3.2.0")
+            implementation("io.coil-kt.coil3:coil-compose:3.2.0")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
