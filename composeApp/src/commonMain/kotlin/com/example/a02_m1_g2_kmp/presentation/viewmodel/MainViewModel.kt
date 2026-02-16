@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-suspend fun main() {
+fun main() {
     val mainViewModel = MainViewModel()
     mainViewModel.loadPhotographers()
 
@@ -41,7 +41,7 @@ class MainViewModel : ViewModel() {
     val errorMessage = _errorMessage.asStateFlow()
 
     init {
-        //loadPhotographers()
+        //loadFakeData()
     }
 
     fun loadPhotographers() {
