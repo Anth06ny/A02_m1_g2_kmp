@@ -11,6 +11,7 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -31,6 +32,8 @@ suspend fun main() {
     KtorPhotographAPI.close()
 }
 
+
+
 object KtorPhotographAPI {
     private const val API_URL =
         "https://www.amonteiro.fr/api/photographers?apikey=1234"
@@ -47,6 +50,7 @@ object KtorPhotographAPI {
 
     //GET
     suspend fun loadPhotographs(): List<PhotographDTO> {
+        delay(3000)
         val response = client.get(API_URL){
 //            headers {
 //                append("Authorization", "Bearer YOUR_TOKEN")

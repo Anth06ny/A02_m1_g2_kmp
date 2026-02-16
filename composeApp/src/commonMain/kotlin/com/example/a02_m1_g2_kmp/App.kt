@@ -20,18 +20,21 @@ import a02_m1_g2_kmp.composeapp.generated.resources.Res
 import a02_m1_g2_kmp.composeapp.generated.resources.compose_multiplatform
 import a02_m1_g2_kmp.composeapp.generated.resources.error
 import a02_m1_g2_kmp.composeapp.generated.resources.my_key
+import androidx.compose.foundation.clickable
+import com.example.a02_m1_g2_kmp.presentation.ui.theme.AppTheme
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 @Preview
 fun App() {
-    MaterialTheme {
+    AppTheme {
         var showContent by remember { mutableStateOf(false) }
         Column(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.primaryContainer)
                 .safeContentPadding()
-                .fillMaxSize(),
+                .fillMaxSize()
+            ,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Button(onClick = { showContent = !showContent }) {
