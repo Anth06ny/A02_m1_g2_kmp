@@ -14,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.a02_m1_g2_kmp.presentation.ui.AppNavigation
 import com.example.a02_m1_g2_kmp.presentation.ui.screens.SearchScreen
 import com.example.a02_m1_g2_kmp.presentation.ui.theme.AppTheme
 
@@ -27,7 +28,7 @@ import com.example.a02_m1_g2_kmp.presentation.ui.theme.AppTheme
 @Preview(showBackground = true, widthDp = 320)
 fun App() {
     AppTheme {
-        SearchScreen()
+        AppNavigation()
         //Experience()
 //        var showContent by remember { mutableStateOf(false) }
 //        Column(

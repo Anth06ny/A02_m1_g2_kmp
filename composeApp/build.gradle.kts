@@ -63,6 +63,8 @@ kotlin {
             implementation("io.coil-kt.coil3:coil-compose:3.2.0")
 
             implementation("org.jetbrains.compose.material:material-icons-extended:1.7.3")
+
+            implementation("org.jetbrains.androidx.navigation:navigation-compose:2.9.+")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

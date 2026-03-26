@@ -26,7 +26,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
 import com.example.a02_m1_g2_kmp.data.remote.PhotographDTO
 import com.example.a02_m1_g2_kmp.presentation.ui.theme.AppTheme
@@ -81,13 +81,15 @@ fun SearchScreenNoDataPreview() {
 }
 
 @Composable
-fun SearchScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel = viewModel(){ MainViewModel() }) {
+fun SearchScreen(
+    modifier: Modifier = Modifier,
+    mainViewModel: MainViewModel = viewModel() { MainViewModel() }, onPictureClick: (PhotographDTO) -> Unit = {}) {
     Column(modifier = modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
 
 
-        var searchText  by remember { mutableStateOf("") }
+        var searchText by remember { mutableStateOf("") }
 
-        SearchBar(text = searchText){
+        SearchBar(text = searchText) {
             searchText = it
         }
 
@@ -100,7 +102,7 @@ fun SearchScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel = v
         ) {
 
             items(list.size) {
-                PictureRowItem(data = list[it])
+                PictureRowItem(data = list[it], onPictureClick = onPictureClick)
             }
         }
 
@@ -109,7 +111,7 @@ fun SearchScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel = v
             Button(
                 onClick = {
                     searchText = ""
-                 },
+                },
                 contentPadding = ButtonDefaults.ButtonWithIconContentPadding
             ) {
                 Icon(
@@ -138,8 +140,7 @@ fun SearchScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel = v
 }
 
 @Composable
-fun SearchBar(modifier: Modifier = Modifier,text :String,  onValueChange: (String) -> Unit) {
-
+fun SearchBar(modifier: Modifier = Modifier, text: String, onValueChange: (String) -> Unit) {
 
 
     TextField(
@@ -172,7 +173,7 @@ fun SearchBar(modifier: Modifier = Modifier,text :String,  onValueChange: (Strin
 }
 
 @Composable //Composable affichant 1 élément
-fun PictureRowItem(modifier: Modifier = Modifier, data: PhotographDTO) {
+fun PictureRowItem(modifier: Modifier = Modifier, data: PhotographDTO, onPictureClick: (PhotographDTO) -> Unit) {
 
     var expended by remember { mutableStateOf(false) }
 
@@ -196,15 +197,19 @@ fun PictureRowItem(modifier: Modifier = Modifier, data: PhotographDTO) {
             modifier = Modifier
                 .heightIn(max = 100.dp)
                 .widthIn(max = 100.dp)
+                .clickable {
+                    onPictureClick(data)
+                }
         )
 
-        Column(modifier = Modifier.clickable{
+        Column(modifier = Modifier.clickable {
             expended = !expended
         }) {
             Text(text = data.stageName, fontSize = 20.sp)
             Text(
                 modifier = Modifier.animateContentSize(),
-                text = if(expended) data.story else ( data.story.take(10) + "..."), fontSize = 14.sp)
+                text = if (expended) data.story else (data.story.take(10) + "..."), fontSize = 14.sp
+            )
         }
 
     }
