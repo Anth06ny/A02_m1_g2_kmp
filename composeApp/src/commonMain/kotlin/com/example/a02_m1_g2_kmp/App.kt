@@ -1,31 +1,21 @@
 package com.example.a02_m1_g2_kmp
 
-import a02_m1_g2_kmp.composeapp.generated.resources.Res
-import a02_m1_g2_kmp.composeapp.generated.resources.compose_multiplatform
-import a02_m1_g2_kmp.composeapp.generated.resources.error
-import a02_m1_g2_kmp.composeapp.generated.resources.my_key
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.a02_m1_g2_kmp.presentation.ui.screens.SearchScreen
 import com.example.a02_m1_g2_kmp.presentation.ui.theme.AppTheme
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 
 @Composable
 @Preview(
@@ -38,6 +28,7 @@ import org.jetbrains.compose.resources.stringResource
 fun App() {
     AppTheme {
         SearchScreen()
+        //Experience()
 //        var showContent by remember { mutableStateOf(false) }
 //        Column(
 //            modifier = Modifier
@@ -62,5 +53,43 @@ fun App() {
 //                }
 //            }
 //        }
+    }
+}
+
+data class Dice(var value: Int = 6) {
+    fun roll() {
+        value = (1..6).random()
+    }
+}
+
+@Composable
+fun Experience(modifier :Modifier = Modifier) {
+
+    Column(modifier) {
+
+        val diceList = remember { mutableStateOf(listOf(Dice(), Dice(), Dice())) }
+
+        Row { diceList.value.forEach { Text(text = it.value.toString() + " ") } }
+
+        Button(onClick = {
+            diceList.value.forEach { it.roll() }
+            println(diceList.value)
+        }) { Text(text = "forEach") }
+
+        Button(onClick = {
+            diceList.value.forEach { it.roll() }
+            diceList.value = diceList.value.toList()
+            println(diceList.value)
+        }) { Text(text = "forEach + toList") }
+
+        Button(onClick = {
+            diceList.value = diceList.value.map { it.roll(); it.copy() }
+            println(diceList.value)
+        }) { Text(text = "map (roll + copy)") }
+
+        Button(onClick = {
+            diceList.value = diceList.value.map { it.copy().apply { roll() } }
+            println(diceList.value)
+        }) { Text(text = "map (copy + roll)") }
     }
 }
