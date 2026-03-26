@@ -1,5 +1,7 @@
+import org.gradle.declarative.dsl.schema.FqName.Empty.packageName
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -10,6 +12,31 @@ plugins {
 
     //kotlinxSerialization : kotlinversion
     kotlin("plugin.serialization") version "2.1.0"
+    //plugin pour créer et injecter dans BuildConfig les clés de local.properties
+    id("com.github.gmazzo.buildconfig") version "5.5.1"
+}
+
+// Read API key from local.properties
+val localProperties = Properties() //import java.utils
+val localPropertiesFile = rootProject.file("localfake.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(localPropertiesFile.inputStream())
+}
+
+//A ajouter à la racine
+buildConfig {
+    // Définit le nom de la classe générée
+    className("BuildConfig")
+    // Le package où la classe sera générée
+    packageName("com.example.a02_m1_g2_kmp")
+
+    // Récupération sécurisée de la clé
+    val photographerApiKey = localProperties.getProperty("photographer.api") ?: ""
+
+    println("photographerApiKey chargée : $photographerApiKey")
+
+    // Crée le champ pour tous les targets (Android, iOS, Desktop)
+    buildConfigField("String", "PHOTOGRAPHER_API_KEY", "\"$photographerApiKey\"")
 }
 
 kotlin {

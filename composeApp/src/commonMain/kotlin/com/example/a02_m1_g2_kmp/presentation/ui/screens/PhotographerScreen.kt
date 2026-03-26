@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.example.a02_m1_g2_kmp.data.remote.PhotographDTO
+import com.example.a02_m1_g2_kmp.presentation.ui.PictureGallery
 import com.example.a02_m1_g2_kmp.presentation.ui.theme.AppTheme
 import org.jetbrains.compose.resources.painterResource
 
@@ -102,14 +103,7 @@ fun PhotographerScreen(
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
 
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    items(photographer.portfolio.size) {
-                        ImageCard(photographer.portfolio[it])
-                    }
-                }
+                PictureGallery( modifier = Modifier.fillMaxWidth(), photographer.portfolio )
             }
         }
     }
