@@ -2,7 +2,9 @@ package com.example.a02_m1_g2_kmp.presentation.ui.screens
 
 import a02_m1_g2_kmp.composeapp.generated.resources.Res
 import a02_m1_g2_kmp.composeapp.generated.resources.error
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,12 +26,19 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.example.a02_m1_g2_kmp.data.remote.PhotographDTO
 import com.example.a02_m1_g2_kmp.presentation.ui.theme.AppTheme
@@ -72,17 +81,24 @@ fun SearchScreenNoDataPreview() {
 }
 
 @Composable
-fun SearchScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel = MainViewModel()) {
+fun SearchScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel = viewModel(){ MainViewModel() }) {
     Column(modifier = modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-        val list = mainViewModel.dataList.value
 
-        SearchBar()
+
+        var searchText  by remember { mutableStateOf("") }
+
+        SearchBar(text = searchText){
+            searchText = it
+        }
+
+        val list = mainViewModel.dataList.collectAsStateWithLifecycle().value.filter { it.stageName.contains(searchText, true) }
 
         //Permet de remplacer très facilement le RecyclerView. LazyRow existe aussi
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.weight(1f)
         ) {
+
             items(list.size) {
                 PictureRowItem(data = list[it])
             }
@@ -91,7 +107,9 @@ fun SearchScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel = M
         Row {
 
             Button(
-                onClick = { /* Do something! */ },
+                onClick = {
+                    searchText = ""
+                 },
                 contentPadding = ButtonDefaults.ButtonWithIconContentPadding
             ) {
                 Icon(
@@ -104,7 +122,7 @@ fun SearchScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel = M
             }
 
             Button(
-                onClick = { /* Do something! */ },
+                onClick = { mainViewModel.loadPhotographers() },
                 contentPadding = ButtonDefaults.ButtonWithIconContentPadding
             ) {
                 Icon(
@@ -120,14 +138,13 @@ fun SearchScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel = M
 }
 
 @Composable
-fun SearchBar(modifier: Modifier = Modifier) {
+fun SearchBar(modifier: Modifier = Modifier,text :String,  onValueChange: (String) -> Unit) {
+
+
+
     TextField(
-        value = "", //Valeur affichée
-        onValueChange = { newValue: String ->
-
-
-
-        }, //Nouveau texte entrée
+        value = text, //Valeur affichée
+        onValueChange = onValueChange, //Nouveau texte entrée
         leadingIcon = { //Image d'icône
             Icon(
                 imageVector = Icons.Default.Search,
@@ -156,6 +173,9 @@ fun SearchBar(modifier: Modifier = Modifier) {
 
 @Composable //Composable affichant 1 élément
 fun PictureRowItem(modifier: Modifier = Modifier, data: PhotographDTO) {
+
+    var expended by remember { mutableStateOf(false) }
+
     Row(modifier = modifier.background(MaterialTheme.colorScheme.tertiary).fillMaxWidth()) {
 //Permission Internet nécessaire
         AsyncImage(
@@ -178,9 +198,13 @@ fun PictureRowItem(modifier: Modifier = Modifier, data: PhotographDTO) {
                 .widthIn(max = 100.dp)
         )
 
-        Column {
+        Column(modifier = Modifier.clickable{
+            expended = !expended
+        }) {
             Text(text = data.stageName, fontSize = 20.sp)
-            Text(text = data.story.take(10), fontSize = 14.sp)
+            Text(
+                modifier = Modifier.animateContentSize(),
+                text = if(expended) data.story else ( data.story.take(10) + "..."), fontSize = 14.sp)
         }
 
     }

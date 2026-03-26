@@ -50,7 +50,9 @@ class MainViewModel : ViewModel() {
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                _dataList.value = KtorPhotographAPI.loadPhotographs()
+                val list = KtorPhotographAPI.loadPhotographs()
+                println("list=$list")
+                _dataList.value = list
             } catch (e: Exception) {
                 //afficher les log de l'erreur dans la console
                 e.printStackTrace()

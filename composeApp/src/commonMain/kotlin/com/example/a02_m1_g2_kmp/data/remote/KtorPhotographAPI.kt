@@ -50,7 +50,6 @@ object KtorPhotographAPI {
 
     //GET
     suspend fun loadPhotographs(): List<PhotographDTO> {
-        delay(3000)
         val response = client.get(API_URL){
 //            headers {
 //                append("Authorization", "Bearer YOUR_TOKEN")
