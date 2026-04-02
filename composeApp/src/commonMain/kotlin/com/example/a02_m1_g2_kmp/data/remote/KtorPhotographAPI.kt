@@ -1,6 +1,7 @@
 package com.example.a02_m1_g2_kmp.data.remote
 
 import com.example.a02_m1_g2_kmp.BuildConfig
+import com.example.a02_m1_g2_kmp.di.initKoin
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.HttpTimeout
@@ -27,27 +28,23 @@ data class PhotographDTO(
 )
 
 suspend fun main() {
-    println(KtorPhotographAPI.loadPhotographs().joinToString(separator = "\n\n"))
+    val koin = initKoin()
+    val photographAPI = koin.get<KtorPhotographAPI>()
+    println(photographAPI.loadPhotographs().joinToString(separator = "\n\n"))
 
     //Pour que le programme s'arrête, inutile sur Android
-    KtorPhotographAPI.close()
+    photographAPI.close()
 }
 
 
 
-object KtorPhotographAPI {
-    private const val API_URL =
-        "https://www.amonteiro.fr/api/photographers?apikey=${BuildConfig.PHOTOGRAPHER_API_KEY}"
+class KtorPhotographAPI(val client: HttpClient) {
 
-    //Déclaration du client
-    private val client  = HttpClient {
-        install(ContentNegotiation) {
-            json(Json { ignoreUnknownKeys = true }, contentType = ContentType.Any)
-        }
-        install(HttpTimeout) {
-            requestTimeoutMillis = 5000
-        }
+    companion object {
+        private const val API_URL =
+            "https://www.amonteiro.fr/api/photographers?apikey=${BuildConfig.PHOTOGRAPHER_API_KEY}"
     }
+
 
     //GET
     suspend fun loadPhotographs(): List<PhotographDTO> {

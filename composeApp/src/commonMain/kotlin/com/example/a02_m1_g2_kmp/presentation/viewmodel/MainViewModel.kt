@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.a02_m1_g2_kmp.data.remote.KtorPhotographAPI
 import com.example.a02_m1_g2_kmp.data.remote.PhotographDTO
+import com.example.a02_m1_g2_kmp.di.initKoin
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,7 +12,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 fun main() {
-    val mainViewModel = MainViewModel()
+    val koin = initKoin()
+    val mainViewModel = koin.get<MainViewModel>()
     mainViewModel.loadPhotographers()
 
 //    withContext(Dispatchers.Default){
@@ -29,7 +31,7 @@ fun main() {
 
 }
 
-class MainViewModel : ViewModel() {
+class MainViewModel(val ktorPhotographAPI: KtorPhotographAPI) : ViewModel() {
 
     private val _dataList = MutableStateFlow(emptyList<PhotographDTO>())
     val dataList = _dataList.asStateFlow()
@@ -50,7 +52,7 @@ class MainViewModel : ViewModel() {
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val list = KtorPhotographAPI.loadPhotographs()
+                val list = ktorPhotographAPI.loadPhotographs()
                 println("list=$list")
                 _dataList.value = list
             } catch (e: Exception) {

@@ -27,6 +27,7 @@ import com.example.a02_m1_g2_kmp.presentation.ui.theme.AppTheme
 )
 @Preview(showBackground = true, widthDp = 320)
 fun App() {
+
     AppTheme {
         AppNavigation()
         //Experience()
