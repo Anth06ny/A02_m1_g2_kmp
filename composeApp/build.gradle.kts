@@ -152,8 +152,24 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.example.a02_m1_g2_kmp"
+            packageName = "Photographer"
             packageVersion = "1.0.0"
+
+            description = "Une application de photographes"
+            vendor = "MonEntreprise"
+
+            windows {
+                shortcut = true
+                menu = true
+                // Icône pour l'application et l'installateur
+                //iconFile.set(project.file("src/commonMain/composeResources/drawable/my_icone.ico"))
+            }
+            macOS {
+                dockName = "PhotographApp"
+            }
+            linux {
+                shortcut = true
+            }
         }
     }
 }
