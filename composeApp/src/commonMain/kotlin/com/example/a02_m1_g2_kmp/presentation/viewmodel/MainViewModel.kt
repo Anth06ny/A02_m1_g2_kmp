@@ -4,12 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.a02_m1_g2_kmp.data.remote.KtorPhotographAPI
 import com.example.a02_m1_g2_kmp.data.remote.PhotographDTO
+import com.example.a02_m1_g2_kmp.db.MyDatabase
 import com.example.a02_m1_g2_kmp.di.initKoin
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 
 fun main() {
     val koin = initKoin()
@@ -31,7 +33,7 @@ fun main() {
 
 }
 
-class MainViewModel(val ktorPhotographAPI: KtorPhotographAPI) : ViewModel() {
+class MainViewModel(val ktorPhotographAPI: KtorPhotographAPI, val myDatabase: MyDatabase) : ViewModel() {
 
     private val _dataList = MutableStateFlow(emptyList<PhotographDTO>())
     val dataList = _dataList.asStateFlow()
@@ -41,6 +43,10 @@ class MainViewModel(val ktorPhotographAPI: KtorPhotographAPI) : ViewModel() {
 
     private val _errorMessage = MutableStateFlow("")
     val errorMessage = _errorMessage.asStateFlow()
+
+    private val photographerQueries = myDatabase.photographerQueries
+
+    private val jsonParser = Json { prettyPrint = true }
 
     init {
         loadFakeData()
@@ -53,12 +59,34 @@ class MainViewModel(val ktorPhotographAPI: KtorPhotographAPI) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val list = ktorPhotographAPI.loadPhotographs()
-                println("list=$list")
+
+                //sauvegarde en base
+                photographerQueries.transaction {
+                    list.forEach {
+                        photographerQueries.insertOrReplacePhotographer(
+                            it.id.toLong(),
+                            it.stageName,
+                            it.photoUrl,
+                            it.story,
+                            jsonParser.encodeToString(it.portfolio))
+                    }
+                }
+
                 _dataList.value = list
             } catch (e: Exception) {
                 //afficher les log de l'erreur dans la console
                 e.printStackTrace()
                 _errorMessage.value = e.message ?: "Une erreur est survenue"
+
+                _dataList.value = photographerQueries.selectAllPhotographers().executeAsList().map {
+                    PhotographDTO(
+                        it.id.toInt(),
+                        it.stageName,
+                        it.photoUrl,
+                        it.story,
+                        jsonParser.decodeFromString(it.portfolio)
+                    )
+                }
             }
             _runInProgress.value = false
         }

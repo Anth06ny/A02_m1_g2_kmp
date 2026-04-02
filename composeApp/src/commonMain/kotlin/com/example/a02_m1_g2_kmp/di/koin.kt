@@ -9,6 +9,7 @@ import io.ktor.http.ContentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.koin.core.context.startKoin
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.KoinAppDeclaration
@@ -18,7 +19,7 @@ import org.koin.dsl.module
 fun initKoin(appDeclaration: KoinAppDeclaration = {}) =
     startKoin {
         appDeclaration()
-        modules(apiModule, viewModelModule)
+        modules(apiModule, viewModelModule, databaseModule())
     }.koin
 
 // Version pour iOS et Desktop
@@ -27,6 +28,8 @@ fun initKoin() = initKoin {}
 //------------------------
 //DECLARATION DES MODULES
 //------------------------
+expect fun databaseModule(): Module
+
 val apiModule = module {
     //Création d'un singleton pour le client HTTP
     single {
